@@ -1,0 +1,153 @@
+# How Metronome works
+
+At its core, Metronome transforms your customers' usage into precise, tailored invoices that reflect your unique business model. Let's start by looking at the end result — an invoice — and break down the building blocks that make it possible.
+
+![Invoice Example: Multiple line items showing charges](/assets/images/metronome-invoice-objects-7f5d9996d490ccb2f643473c592ece9a.png)
+
+While simple invoices might seem to follow the basic formula **Price × Quantity = Charge** , modern usage-based billing requires a more sophisticated approach that includes a third critical element: your **Commercial Model**.
+
+Metronome's data architecture is built on three essential foundations - one for each part of this calculation:
+
+![Metronome offering](/assets/images/objects-table-25dcd8552d736601c20d7ef163a3910f.png)
+
+This comprehensive approach ensures you can not only calculate what customers owe but also encode how they should pay—whether through subscriptions, credits, commitments, or consumption-based billing.
+
+In the following sections, we'll explore each building block to show how Metronome's flexible architecture adapts to your evolving business needs.
+
+## Quantity: Usage Tracking & Aggregation​
+
+In usage-based billing, **quantity** represents how much your customers actually use your platform. Unlike traditional subscription models with fixed fees, usage-based billing requires accurately measuring customer activity — whether that's API calls made, data processed, storage consumed, or users onboarded.
+
+Metronome's approach to determining these quantities gives you exceptional flexibility through two key components:
+
+  * **Usage Events** capture the raw data about customer activity directly from your platform
+  * **Billable Metrics** transform this activity data into meaningful, billable quantities by defining both what to measure (filtering) and how to measure it (aggregation)
+
+
+
+### Usage Events​
+
+[Usage events](/connect-metronome/design-usage-events/) are the raw data about how customers interact with your platform—API calls, storage consumption, user logins, or any measurable interaction. Metronome lets you design your own usage schema around your business needs. [Send usage events via our API](/connect-metronome/send-usage-events/) in the format that makes sense for your operations, without conforming to rigid predefined structures.
+
+![Usage events are sent to Metronome via ingest API](/assets/images/usage_events_diagram-8c6c818d57a1ded42bf662d9defe70b8.png)
+
+### Billable Metrics​
+
+[Billable metrics](/connect-metronome/create-billable-metrics/) transform raw usage events into meaningful quantities that appear on an invoice. They define how to meter, filter, and aggregate usage into billable units. Define exactly what you want to measure—from simple counts to complex aggregations with custom filters and groupings. One usage event can feed multiple billable metrics, giving you the flexibility to meter anything your customers use.
+
+![Billable metrics filter and aggregate your event stream](/assets/images/billable_metric_diagram-49f92894ca48dae35f0d2fc47a642e02.png)
+
+> **Strategic Insight:** By separating raw usage collection from billable metrics, you can evolve your metering model without changing how you instrument your application. Your engineering team simply instruments your application to send activity data, while your business team configures how to bill for it—all without additional code changes.
+
+## Price: Products & Rate Cards​
+
+While the quantity side of our equation deals with measuring usage, to configure the **price** for each metric, you must first define what you're selling and how much you charge for it. Metronome provides two components designed specifically for these tasks:
+
+  * **Products** define what you're selling to customers
+  * **Rate Cards** establish how much you charge for those products
+
+
+
+### Products​
+
+[Products](/pricing-packaging/create-products-contracts/) define what you actually sell to customers—the individual SKUs that appear as line items on your invoices. Metronome supports multiple product types to accommodate different types of charges, including usage-based, fixed, or subscription charges. This ensures your product catalog represents everything you might charge for, not just usage-based items.
+
+![Products for all charges on an invoice](/assets/images/products_diagram-f2766fbc59707cfcfc68ad9071d153ec.png)
+
+Your product catalog gives you control over both billing logic and presentation. You can:
+
+  * **Customize invoice appearance** by determining how quantities are displayed, whether they're rounded, or how they're converted
+  * **Organize related SKUs** using product tags for easier management and reporting
+  * **Control granularity** by presenting charges as either a consolidated lump sum or itemized by specific dimensions
+
+
+
+This flexibility ensures your customers receive invoices that align with how they understand your value, rather than how your internal systems track usage.
+
+### Rate Cards​
+
+[Rate cards](/pricing-packaging/create-manage-rate-cards/) define the default pricing for your usage products across your entire customer base. Each rate includes what to charge per unit for specific start and end dates, enabling scheduled price changes, promotions, or gradual increases/decreases.
+
+![Define your rate card in Metronome](/assets/images/rate_cards_diagram-120a8ab65c3f51bfd6cc7d81694c3335.png)
+
+Through the rate card, Metronome decouples pricing from commercial models. This separation solves a key challenge in usage-based billing: maintaining consistent pricing while supporting diverse business arrangements. When you add a product to your rate card or update pricing, these changes automatically flow to all commercial models—whether customers are on subscriptions, consumption-based billing, or enterprise agreements.
+
+![Contracts use rate cards to determine prices for a customer](/assets/images/delete-me-temp-rate-cards-0e3d1d15defc0bc01c3596f1e5a8b246.png)
+
+> **Strategic Insight:** Most billing systems require you to duplicate product definitions across different plans and tiers, making pricing changes a time-consuming process that often results in inconsistencies and errors. Metronome's decoupled approach lets you define products once, price them once, and apply them across any commercial model. This gives you unprecedented agility to evolve your pricing strategy without spending weeks on implementation or disrupting your customers' experience. Many Metronome customers support _all_ of their commercial models with just one rate card!
+
+## Contracts: Encode Your Commercial Model​
+
+With quantities measured and prices defined, the final element in our equation is your Commercial Model—how customers actually pay for what they use. This is where Metronome truly differentiates from traditional billing systems.
+
+Your commercial model must answer three essential questions:
+
+  * **What** has the customer agreed to pay for? (products and rates)
+  * **How** have they agreed to pay? (arrears, commitments, credits, subscriptions)
+  * **Where** should they be charged? (payment systems and marketplaces)
+
+
+
+In Metronome, all these elements are defined in a **Contract**.
+
+### Contracts​
+
+[Contracts](/manage-product-access/provision-customer/) connect customers to your pricing structure and define their specific commercial arrangement. Unlike rigid plan-based systems, Metronome contracts let you configure each aspect of the commercial relationship:
+
+  * **Base Pricing** : Inherit standard rates from your rate cards
+  * **Custom Terms** : Apply overrides like percentage discounts or custom per-unit pricing
+  * **Product Access** : Enable or disable specific products for different customer segments
+  * **Payment Structure** : Configure commitments, credits, or subscription fees
+  * **Billing Cycles** : Determine invoice frequency and timing
+
+
+
+![Pricing changes are inherited immediately](/assets/images/contracts_diagram-6808351b131abb7d4150ab8319c72f2a.png)
+
+This modular approach means you can support any commercial model your business requires:
+
+  * **Pay-as-you-go** : Bill customers in arrears for their actual usage
+  * **Prepaid Credits** : Sell credits upfront that draw down with usage
+  * **Subscriptions with Overage** : Provide usage allowances with charges for exceeding thresholds
+  * **Enterprise Commitments** : Secure minimum spend commitments with discounts
+  * **Hybrid Models** : Combine any of these approaches for specific customer segments
+  * And many more!
+
+
+
+Once a customer is on a contract, Metronome automatically starts to generate usage statements based on the defined parameters. If a customer has credits, we track utilization and drawdown. If they're on pay-as-you-go, they're charged at the end of their billing period. For commitments, we monitor actual usage against committed amounts. All elements of Metronome contracts are programmable via API, allowing you to build self-serve workflows, custom pricing pages, or enterprise quote-to-cash systems on the same foundation.
+
+> **Strategic Insight:** Most billing systems force you to create rigid plan structures, where each combination of products and payment terms requires a separate plan. This approach breaks down as you scale—especially when you need to support both self-serve and enterprise customers on the same platform. Metronome's contract architecture decouples commercial models at the customer level, allowing each customer to have precisely the arrangement they need. This means you can run enterprise deals alongside self-serve customers without maintaining parallel billing systems or fragmenting your business logic across multiple codebases.
+
+## Invoice Generation: Bringing It All Together​
+
+When it's time to generate an invoice, Metronome:
+
+  1. **Receives usage data** from your events for the billing period
+  2. **Processes this data** through the appropriate billable metrics to calculate quantities
+  3. **Applies pricing** from the customer's contract, including any overrides from the base rate card
+  4. **Generates an invoice** that clearly communicates charges to your customer
+
+
+
+Metronome's dynamic invoice generation happens:
+
+  * **Real-time with usage** \- Every time usage is sent, Metronome evaluates [customer alerts and thresholds](/manage-product-access/create-manage-alerts/) to send webhooks if spending limits are reached or credits are depleted
+  * **On-demand via API** \- Whenever the Metronome APIs are called, [powering real-time dashboards](/enhance-customer-experience/customer-dashboards/) in your end-user applications
+  * **At billing cycle close** \- When a customer invoice is finalized and [sent to your system of choice](/invoice-customers/solutions/), such as at the end of the month or quarter
+
+
+
+![The invoice brings it all together](/assets/images/invoices_diagram-128b100eff93a612e6601886ed89ae55.png)
+
+## Ready to Get Started?​
+
+Follow the [Quickstart](/launch-guides/quickstart/) to create your first invoice, or dive deeper with our detailed guides:
+
+  * [Usage Events](/connect-metronome/design-usage-events/)
+  * [Billable Metrics](/connect-metronome/create-billable-metrics/)
+  * [Products](/pricing-packaging/create-products-contracts/)
+  * [Rate Cards](/pricing-packaging/create-manage-rate-cards/)
+  * [Contracts](/manage-product-access/provision-customer/)
+
+
